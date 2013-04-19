@@ -1,0 +1,25 @@
+A simple wallpaper slideshow for the nitrogen wallpaper thingy (I am rather profecional arn't I).
+Made for crunchbang but it should work on debian and ubuntu if they user nitrogen that is.
+I user conky to change it hourly but it could be done anyway that can run a command at a set interval
+(or not set I suppose).
+
+My conky to change it is like this
+
+wallpaper $alignr ${exec rotate-wallpaper -c} / ${exec rotate-wallpaper -t}
+${execi 3600 rotate-wallpaper}
+
+The first line is not needed and just displays the current wallpaper out of the total. The second line is
+where stuff starts to happen, it calls the command every 3600 seconds (an hour unless my maths is even
+worse than I though (quite possible)).
+
+To use it you either need to run it as a bash script or put it somewhere in your path for bash to find it
+and execute it. On crunchbang put it in the bin folder in your home directory and run the following command
+from home.
+
+chmod +x bin/rotate-wallpaper
+
+That makes the file executable so that it can be run by typing its name or ./rotate-wallpaper from where it is
+(in this case ~/bin).
+
+This script is a heavily modified version of the script found here http://crunchbanglinux.org/pastebin/235
+
