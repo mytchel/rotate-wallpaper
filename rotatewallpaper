@@ -1,4 +1,5 @@
-# Author:
+#!/bin/bash
+## Author:
 #   Philip Newborough <corenominal@corenominal.org>
 # Copyright:
 #   © 2008 Philip Newborough <corenominal@corenominal.org>
@@ -21,11 +22,9 @@
 #   License V2.1 can be found in the file `/usr/share/common-licenses/LGPL-2.1'.
 #-------------------------------------------------------------------------------
 #
-# Further edited and redistributed by Mytchel Hammond (mytchel.hammond@gmail.com),
-# well it was basicly remade with the old (from here http://crunchbanglinux.org/pastebin/235)
-# as a reference. Any help or suggestions would be appriciated, send me an email
-# if you're interested.
-#
+# Further edited by Mytchel Hammond, well it was basicly remade with the old
+# version (http://crunchbanglinux.org/pastebin/235) as a reference
+# 
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     echo "Usage:"
@@ -40,6 +39,10 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     echo "          Return current image number"
     echo "    -d, --restore-default-settings"
     echo "          Reset settings file to default"
+    echo "    -f, --file"
+    echo "          Return filepath of current wallpaper"
+    echo "    -b, --back"
+    echo "          Go to previose wallpaper"
     echo ""
     echo "Settings file located at ~/.config/rotate-wallpaper/settings"
     echo "You can change the directory that the wallpapers are picked from and the current wallpaper number"
@@ -50,7 +53,7 @@ fi
 
 
 # Check for and do options ------------------------------------------------------
- 
+
 if [ ! -d ~/.config/rotate-wallpaper ]; then
     mkdir ~/.config/rotate-wallpaper
 fi
@@ -62,8 +65,8 @@ if [ ! -f ~/.config/rotate-wallpaper/settings ]; then
 fi
 
 if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
-   echo "Setting wallpaper directory to $2"
-   printf "current=0\ntotal=0\nwallpapers=$2" > ~/.config/rotate-wallpaper/settings
+    echo "Setting wallpaper directory to $2"
+    printf "current=0\ntotal=0\nwallpapers=$2" > ~/.config/rotate-wallpaper/settings
 fi
 
 . ~/.config/rotate-wallpaper/settings
@@ -84,14 +87,17 @@ if [ "$1" = "-c" ] || [ "$1" = "--count" ]; then
     exit
 fi
 
+if [ "$1" = "-f" ] || [ "$1" = "--file" ]; then
+    echo "$wallpaper_file"
+    exit
+fi
+
 if [ ! -d $wallpapers ]; then
     echo "Oops! Specified directory does not exist."
     echo ""
-    rotate-wallpaper --help
+    rotatewallpaper --help
     exit 1
 fi
-
-
 
 # Test location for images to use as wallpapers ---------------------------------------------- 
 
@@ -107,7 +113,7 @@ fi
 if [ "$QUERY" = "" ];then
     echo "Oops! No images found within specified directory."
     echo ""
-    rotate-wallpaper --help
+    rotatewallpaper --help
     exit 1
 fi
 
@@ -126,6 +132,10 @@ done
 
 NEW_WALLPAPER=$(( current+1 ))
 
+if [ "$1" = "-b" ] || [ "$1" = "--back" ]; then
+    NEW_WALLPAPER=$(( current-1 ))
+fi
+
 if [ $NEW_WALLPAPER -gt $NO_OF_WALLPAPERS ];then
     NEW_WALLPAPER=1
 fi
@@ -134,22 +144,27 @@ fi
 
 # find and set wallpaper -------------------------------------------
 
+wallpaper_file=1
 CNT=1
 for file in $QUERY; do
     if [ $CNT = $NEW_WALLPAPER ]; then
-	if [ ! -d "$file" ];then
-	    FILE_TYPE=$(file -i "$file")
-	    if [ "$FILE_TYPE" = "$file: image/png; charset=binary" ] || [ "$FILE_TYPE" = "$file: image/jpeg; charset=binary" ];then
-		nitrogen --set-zoom-fill "$file"
-	    fi
-	fi
+        if [ ! -d "$file" ];then
+            FILE_TYPE=$(file -i "$file")
+
+            if [ "$FILE_TYPE" = "$file: image/png; charset=binary" ] || [ "$FILE_TYPE" = "$file: image/jpeg; charset=binary" ]; then
+                color="101010" 
+                nitrogen --set-auto --set-color=$color "$file" 2> /dev/null
+                wallpaper_file=${file}
+            fi
+        fi
     fi
     CNT=$(( CNT+1 ))
 done
 
-
 # save current wallpaper
 
-printf "current=$NEW_WALLPAPER\ntotal=$NO_OF_WALLPAPERS\nwallpapers=$wallpapers" > ~/.config/rotate-wallpaper/settings
+printf "current=$NEW_WALLPAPER\ntotal=$NO_OF_WALLPAPERS\nwallpapers=$wallpapers\nwallpaper_file='$wallpaper_file'" > ~/.config/rotate-wallpaper/settings
+
+setconkytextcolor
 
 exit
