@@ -28,7 +28,7 @@
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     echo "Usage:"
-    echo "  rotate-wallpaper --path DIRECTORY"
+    echo "  rotatewallpaper [options]"
     echo "    -h, --help"
     echo "          Shows this message and exits."
     echo "    -p [path to wallpapers], --path [path to wallpapers]"
@@ -44,7 +44,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     echo "    -b, --back"
     echo "          Go to previose wallpaper"
     echo ""
-    echo "Settings file located at ~/.config/rotate-wallpaper/settings"
+    echo "Settings file located at ~/.config/rotatewallpaper/settings"
     echo "You can change the directory that the wallpapers are picked from and the current wallpaper number"
     echo ""
     exit
@@ -54,26 +54,27 @@ fi
 
 # Check for and do options ------------------------------------------------------
 
-if [ ! -d ~/.config/rotate-wallpaper ]; then
-    mkdir ~/.config/rotate-wallpaper
+if [ ! -d ~/.config/rotatewallpaper ]; then
+    mkdir ~/.config/rotatewallpaper
 fi
 
-if [ ! -f ~/.config/rotate-wallpaper/settings ]; then
-    touch ~/.config/rotate-wallpaper/settings
+if [ ! -f ~/.config/rotatewallpaper/settings ]; then
+    touch ~/.config/rotatewallpaper/settings
     echo "Run again to rotate wallpaper"
-    rotate-wallpaper -d
+    rotatewallpaper -d
 fi
 
 if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
     echo "Setting wallpaper directory to $2"
-    printf "current=0\ntotal=0\nwallpapers=$2" > ~/.config/rotate-wallpaper/settings
+    printf "current=0\ntotal=0\nwallpapers=$2" > ~/.config/rotatewallpaper/settings
 fi
 
-. ~/.config/rotate-wallpaper/settings
+. ~/.config/rotatewallpaper/settings
 
 if [ "$1" = "-d" ] || [ "$1" = "--restore-default-settings" ]; then
-    printf "current=0\ntotal=0\nwallpapers=~/images/wallpapers" > ~/.config/rotate-wallpaper/settings
+    printf "current=0\ntotal=0\nwallpapers=~/images/wallpapers" > ~/.config/rotatewallpaper/settings
     echo "Made new settings file..."
+    echo "You will probebly want to change the path to your wallpapers with the -p file option"
     exit
 fi
 
@@ -152,7 +153,7 @@ done
 
 # save current wallpaper
 
-printf "current=$NEW_WALLPAPER\ntotal=$NO_OF_WALLPAPERS\nwallpapers=$wallpapers\nwallpaper_file='$wallpaper_file'" > ~/.config/rotate-wallpaper/settings
+printf "current=$NEW_WALLPAPER\ntotal=$NO_OF_WALLPAPERS\nwallpapers=$wallpapers\nwallpaper_file='$wallpaper_file'" > ~/.config/rotatewallpaper/settings
 
 setconkytextcolor
 
