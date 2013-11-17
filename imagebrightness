@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# if ImageBrightness.class and this file are not in the same directory
+# remove the comment on the following line and change it to point to
+# the directory that ImageBrightness.class is in
+
+#cd ~/bin/resources
+
+java ImageProperties -b "$1"
+
