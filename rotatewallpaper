@@ -27,12 +27,15 @@
 # 
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    echo "Set wallpaper to random from directory"
     echo "Usage:"
     echo "  rotatewallpaper [options]"
     echo "    -h, --help"
     echo "          Shows this message and exits."
     echo "    -p [path to wallpapers], --path [path to wallpapers]"
     echo "          Set path to directory containing images."
+    echo "    -s [image]"
+    echo "          Set image as wallpaper."
     echo "    -t, --total"
     echo "          Return total number of images in wallpaper directory"
     echo "    -c, --count"
@@ -42,15 +45,21 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     echo "    -f, --file"
     echo "          Return filepath of current wallpaper"
     echo "    -b, --back"
-    echo "          Go to previose wallpaper"
+    echo "          Go to previous wallpaper"
     echo ""
-    echo "Settings file located at ~/.config/rotatewallpaper/settings"
-    echo "You can change the directory that the wallpapers are picked from and the current wallpaper number"
+    echo "Settings stored at ~/.config/rotatewallpaper/settings"
     echo ""
     exit
 fi
 
+settings=~/.config/rotatewallpaper/settings
 
+function save() {
+    echo "current=$1" > "$settings"
+    echo "total=$2" >> "$settings"
+    echo "wallpapers=$3" >> "$settings"
+    echo "wallpaper_file='$4'" >> "$settings"
+}
 
 # Check for and do options ------------------------------------------------------
 
@@ -58,25 +67,29 @@ if [ ! -d ~/.config/rotatewallpaper ]; then
     mkdir ~/.config/rotatewallpaper
 fi
 
-if [ ! -f ~/.config/rotatewallpaper/settings ]; then
-    touch ~/.config/rotatewallpaper/settings
-    echo "Run again to rotate wallpaper"
-    rotatewallpaper -d
+if [ ! -f "$settings" ]; then
+    touch "$settings"
+    $0 -d
 fi
 
 if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
     echo "Setting wallpaper directory to $2"
-    printf "current=0\ntotal=0\nwallpapers=$2" > ~/.config/rotatewallpaper/settings
+    save 0 0 "$2" ''
 fi
-
-. ~/.config/rotatewallpaper/settings
 
 if [ "$1" = "-d" ] || [ "$1" = "--restore-default-settings" ]; then
-    printf "current=0\ntotal=0\nwallpapers=~/images/wallpapers" > ~/.config/rotatewallpaper/settings
+    save 0 0 ~/images/wallpapers ''
     echo "Made new settings file..."
-    echo "You will probebly want to change the path to your wallpapers with the -p file option"
     exit
 fi
+
+. "$settings"
+
+function setwall() {
+    color="101010"
+    nitrogen --set-auto --set-color=$color "$1" 2> /dev/null
+    save "$2" "$total" "$wallpapers" "$1"
+}
 
 if [ "$1" = "-t" ] || [ "$1" = "--total" ]; then
     echo "$total"
@@ -93,10 +106,15 @@ if [ "$1" = "-f" ] || [ "$1" = "--file" ]; then
     exit
 fi
 
+if [ "$1" = "-s" ]; then
+    setwall "$2" "0"
+    exit
+fi
+
 if [ ! -d $wallpapers ]; then
     echo "Oops! Specified directory does not exist."
     echo ""
-    rotatewallpaper --help
+    $0 --help
     exit 1
 fi
 
@@ -109,7 +127,7 @@ QUERY="$QUERY$wallpapers/*.png "
 if [ "$QUERY" = "" ];then
     echo "Oops! No images found within specified directory."
     echo ""
-    rotatewallpaper --help
+    $0 --help
     exit 1
 fi
 
@@ -122,39 +140,22 @@ for file in $QUERY; do
     fi
 done
 
-# Get number of new wallpaper and loop back to 0 if more than total -----------------------
-
-NEW_WALLPAPER=$(( current+1 ))
-
-if [ "$1" = "-b" ] || [ "$1" = "--back" ]; then
-    NEW_WALLPAPER=$(( current-1 ))
-fi
-
-if [ $NEW_WALLPAPER -gt $NO_OF_WALLPAPERS ];then
-    NEW_WALLPAPER=1
-fi
-
-
+RAND=`od -d -N2 -An /dev/urandom`
+NEW_WALLPAPER=$(( RAND % NO_OF_WALLPAPERS ))
 
 # find and set wallpaper -------------------------------------------
+
+total=$NO_OF_WALLPAPERS
 
 wallpaper_file="not found"
 CNT=1
 for file in $QUERY; do
     if [ $CNT = $NEW_WALLPAPER ]; then
         if [ ! -d "$file" ]; then
-	    color="101010"
-	    nitrogen --set-auto --set-color=$color "$file" 2> /dev/null
-            wallpaper_file=${file}
+	    setwall "$file" "$CNT"
         fi
     fi
     CNT=$(( CNT+1 ))
 done
 
-# save current wallpaper
-
-printf "current=$NEW_WALLPAPER\ntotal=$NO_OF_WALLPAPERS\nwallpapers=$wallpapers\nwallpaper_file='$wallpaper_file'" > ~/.config/rotatewallpaper/settings
-
 setconkytextcolor
-
-exit
