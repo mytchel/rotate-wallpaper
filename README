@@ -1,11 +1,25 @@
-A simple wallpaper slideshow for the nitrogen wallpaper that goes with conky and changes its text 
-color to white or black depending on the brighness of the wallpaper.
+RotateWallpaper
+===============
 
-Add the following to your .conkyrc to rotate your wallpaper every hour
-
-${execi 3600 rotate-wallpaper} # rotate wallpaper every 3600 seconds (an hour)
-${execp conkytextcolor} # set the text color to what is most likely to work best.
+A simple wallpaper slideshow for the nitrogen (now feh, edit rotatewallpaper to change) 
+wallpaper that goes with conky and changes its text color to white or black depending 
+on the brighness of the wallpaper.
 
 The rotatewallpaper script is a heavily modified version of the script found here
 (http://crunchbanglinux.org/pastebin/235).
 
+Installaion
+-----------
+
+You will need java for image brightness and javac to compile it.
+
+Run:
+    $ make
+    $ make install
+  
+
+Then add the following to your ~/.conkyrc to rotate your wallpaper every hour and set the
+text color.
+
+${execi 3600 rotate-wallpaper} # rotate wallpaper every 3600 seconds (an hour)
+${execp conkytextcolor} # set the text color to what is most likely to work best.
