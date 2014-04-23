@@ -87,8 +87,8 @@ fi
 
 function setwall() {
     color="101010"
-    #nitrogen --set-auto --set-color=$color "$1" 2> /dev/null
-    feh --bg-fill "$1" 2> /dev/null
+    nitrogen --set-auto --set-color=$color "$1" 2> /dev/null
+    #feh --bg-fill "$1" 2> /dev/null
     save "$2" "$total" "$wallpapers" "$1"
 }
 

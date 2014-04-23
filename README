@@ -14,7 +14,7 @@ Installaion
 You will need java for image brightness and javac to compile it.
 
 Run:
-    $ make
+    $ make # You will likely need to edit the make file and change your java compiler (javac should would but slackwares funny)
     $ make install
   
 

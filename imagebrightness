@@ -4,7 +4,7 @@
 # remove the comment on the following line and change it to point to
 # the directory that ImageBrightness.class is in
 
-#cd ~/bin/resources
-
+# cd to the directory that has ImagePropertes, unless you changed anything it is this.
+cd /usr/local/bin 
 java ImageProperties -b "$1"
 

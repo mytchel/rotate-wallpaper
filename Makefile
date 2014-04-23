@@ -1,4 +1,4 @@
-JAVAC=/usr/lib64/java/bin/javac
+JAVAC=javac
 
 BINDIR?=/usr/local/bin
 

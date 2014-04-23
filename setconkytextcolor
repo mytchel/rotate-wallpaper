@@ -2,11 +2,11 @@
 
 width=300
 height=400
-x=1000
+x=50
 y=50
 
-#convert -resize $(xrandr | grep -m 1 "*" | grep -o "[0-9]*x[0-9]*") "$(rotatewallpaper -f)" "/tmp/image1"
-convert -crop ${width}x${height}+${x}+${y} "$(rotatewallpaper -f)" "/tmp/image2"
+convert -resize $(xrandr | grep -m 1 "*" | grep -o "[0-9]*x[0-9]*") "$(rotatewallpaper -f)" "/tmp/image1"
+convert -crop ${width}x${height}+${x}+${y} "/tmp/image1" "/tmp/image2"
 
 brightness=$(imagebrightness "/tmp/image2")
 rm "/tmp/image2"
